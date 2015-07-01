@@ -1,0 +1,32 @@
+---
+title: "Acquire Data"
+author: "Amit Kapoor"
+date: "1 July 2015"
+output: html_document
+---
+
+There are three place to get onion price and quantity information by market. 
+
+1. [Agmarket](http://agmarknet.nic.in/) - This is website run by the  Directorate of Marketing & Inspection (DMI), Ministry of Agriculture, Government of India and provides daily price and arrival data for all agricultural commodity at national and state level. 
+Unfortunately, the link to get Market-wise Daily Report for Specific Commodity (Onion for us) leads to a multipage aspx entry form to get data for each date. So it is like to require an involved scraper to get the data. Here is the best link to go to get what is available - http://agmarknet.nic.in/agnew/NationalBEnglish/SpecificCommodityWeeklyReport.aspx?ss=1
+
+2. [Data.gov.in](https://data.gov.in/) - This is normally a good place to get government data in a machine readable form like csv or xml. The Variety-wise Daily Market Prices Data of Onion is available for each year as an XML but unfortunately it does not include quantity information that is needed. Here is the best link to go to get what is available - https://data.gov.in/catalog/variety-wise-daily-market-prices-data-onion#web_catalog_tabs_block_10
+
+3. 
+
+
+http://nhrdf.org/en-us/DatabaseReports
+
+
+
+```{r}
+summary(cars)
+```
+
+You can also embed plots, for example:
+
+```{r, echo=FALSE}
+plot(cars)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
