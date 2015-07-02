@@ -13,7 +13,7 @@ There are three place to get onion price and quantity information by market.
 
 2. [Data.gov.in](https://data.gov.in/) - This is normally a good place to get government data in a machine readable form like csv or xml. The Variety-wise Daily Market Prices Data of Onion is available for each year as an XML but unfortunately it does not include quantity information that is needed. It would be good to have both price and quantity - so even though this is easy, lets see if we can get both from a different source. Here is the best link to go to get what is available - https://data.gov.in/catalog/variety-wise-daily-market-prices-data-onion#web_catalog_tabs_block_10
 
-3. [NDRDF](http://nhrdf.org/en-us/) - This is the website of National Horticultural Research & Development Foundation and maintains a database on Market Arrivals and Price, Area and Production and Export Data for three commodities - Garlic, Onion and Potatoes. We are in luck! It also has data from 1996 onwards and has only got one form to fill to get the data in a tabular form. Lets use this. Here is the best link to got to get all that is available - http://nhrdf.org/en-us/DatabaseReports
+3. [NDRDF](http://nhrdf.org/en-us/) - This is the website of National Horticultural Research & Development Foundation and maintains a database on Market Arrivals and Price, Area and Production and Export Data for three commodities - Garlic, Onion and Potatoes. We are in luck! It also has data from 1996 onwards and has only got one form to fill to get the data in a tabular form. Further it also has production and export data. Excellent. Lets use this. Here is the best link to got to get all that is available - http://nhrdf.org/en-us/DatabaseReports
 
 
 ## Scraping the Data
@@ -27,7 +27,6 @@ library(rvest)
 library(magrittr)
 
 url <- "http://nhrdf.org/en-us/DailyWiseMarketArrivals"
-pg <- html(url)
 
 # Set a session - then get the form - extract the first one
 pg.session <- html_session(url)
@@ -73,12 +72,67 @@ pg.table <-  pg.out %>%
 str(pg.table)
 
 # 
-file <- paste("data/onion", as.character(month), as.character(year), ".csv", sep="")
+file <- paste("data/dailyprice", as.character(month), as.character(year), ".csv", sep="")
 write.csv(pg.table, file = file, quote = FALSE, row.names = FALSE)
 ```
 
-Ready to go forward.
+Ready to go forward. Lets write similiar stuff to get the [Area and Production](http://nhrdf.org/en-us/AreaAndProductiionReport) data
 
+```{r}
+url2 <- "http://nhrdf.org/en-us/AreaAndProductiionReport"
+pg2.session <- html_session(url2)
+pg2.form <- html_form(pg2.session)[[1]]
+pg2.form.filled <- set_values(pg2.form, 
+                      "dnn$dnnLANG$selectCulture" = "en-US",
+                      "dnn$ctr961$AreaAndProductiionReport$Year" = "All",
+                      "dnn$ctr961$AreaAndProductiionReport$State" = "All",
+                      "dnn$ctr961$AreaAndProductiionReport$ddlCrop" = 1)
 
+pg2.submit <- submit_form(pg2.session, pg2.form.filled,
+                submit = 'dnn$ctr961$AreaAndProductiionReport$BtnGetMnthWiseData')
+pg2.out <- html(pg2.submit)
+pg2.table <-  pg2.out %>% 
+            html_node("#dnn_ctr961_AreaAndProductiionReport_GridView1")  %>%
+            html_table()
 
+str(pg2.table)
+write.csv(pg2.table, file = "data/prod.csv", quote = FALSE, row.names = FALSE)
+```
 
+Now let us try to write similiar script to get the [Export](http://nhrdf.org/en-us/MonthwiseExportReport) data Here though we will have to loop through the months to get the data - as we can are not able to use All in the year and month together.
+
+```{r}
+url3 <- "http://nhrdf.org/en-us/MonthwiseExportReport"
+pg3.session <- html_session(url3)
+pg3.form <- html_form(pg3.session)[[1]]
+
+# Create a names for the data frame and dummy data frame
+cols <- c("Year", "Month","Source", "Quantity.MT", "Value.Rs.Lakhs", "PUV.Rs.MT")
+pg3.master <- data.frame()
+
+for (month in 1:12) {
+    pg3.form.filled <- set_values(pg3.form,
+                              "dnn$dnnLANG$selectCulture" = "en-US",
+                              "dnn$ctr980$MonthwiseExportReport$ddlCrop" = 1,
+                              "dnn$ctr980$MonthwiseExportReport$Year" = "All",
+                              "dnn$ctr980$MonthwiseExportReport$MonthName" = month)
+
+    pg3.submit <- submit_form(pg3.session, pg3.form.filled,
+                submit = 'dnn$ctr980$MonthwiseExportReport$Button1')
+    pg3.out <- html(pg3.submit)
+    pg3.table <-  pg3.out %>% 
+            html_node("#dnn_ctr980_MonthwiseExportReport_GridView1")  %>%
+            html_table()
+    
+    names(pg3.table) <- cols
+    
+    pg3.master <- rbind(pg3.master, pg3.table)
+}    
+    
+str(pg3.table)
+str(pg3.master)
+
+file3 <- paste("data/export", ".csv", sep="")
+write.csv(pg3.master, file = file3, quote = FALSE, row.names = FALSE)
+
+```
