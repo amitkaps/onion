@@ -1,0 +1,27 @@
+---
+title: "Explore Data"
+author: "Amit Kapoor"
+date: "19 July 2015"
+output: html_document
+---
+
+Explore the Onion Data
+
+```{r}
+prod <- read.csv("data/prod.csv")
+str(prod)
+
+```
+
+You can also embed plots, for example:
+
+```{r}
+library(dplyr) 
+prod2014 <- prod %>%
+            filter(Year == "2013-14") %>%
+            select(State, Production..in..000.MT.)
+
+write.csv(prod2014, "data/prod2014.csv", quote = FALSE, 
+          row.names = FALSE )
+```
+

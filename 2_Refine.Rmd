@@ -1,0 +1,66 @@
+---
+title: "Refine the Onion Data"
+author: "Amit Kapoor"
+date: "2 July 2015"
+output: html_document
+---
+
+
+```{r}
+library(dplyr)
+prod <- read.csv("data/prod.csv")
+str(prod)
+
+prod <- prod %>%
+        rename(Area.000Ha = Area...000.ha.) %>%
+        rename(Production.000MT = Production..in..000.MT.) %>%
+        rename(Yield.MT.per.Ha = Yield..Ton.ha.)
+str(prod)
+
+prod <- prod %>%
+        filter(Year != "Total")
+
+write.csv(prod, file = "data/onion_production.csv", 
+          quote = FALSE, row.names = FALSE)
+```
+
+
+```{r}
+export <- read.csv("data/export.csv")
+str(export)
+
+export <- export %>%
+        filter(Source != "Total")
+
+write.csv(export, file = "data/onion_export.csv", 
+          quote = FALSE, row.names = FALSE)
+```
+
+```{r}
+price <- read.csv("data/monthlyprice.csv")
+str(price)
+
+price <- price %>%
+        rename(Arrival.Quantity.q = Arrival..q.) %>%
+        rename(Price.Min.Rs.per.q = Price.Minimum..Rs.q.) %>%
+        rename(Price.Max.Rs.per.q = Price.Maximum..Rs.q.) %>%
+        rename(Price.Modal.Rs.per.q = Modal.Price..Rs.q.)
+str(price)
+
+price <- price %>%
+        filter(Year != "Total")
+
+str(price)
+
+write.csv(price, file = "data/onion_monthly_price.csv", 
+          quote = FALSE, row.names = FALSE)
+
+```
+
+
+
+
+
+
+
+

@@ -1,4 +1,4 @@
-State,Year,Area ('000 ha),Production (in '000 MT),Yield (Ton/ha)
+State,Year,Area.000Ha,Production.000MT,Yield.MT.per.Ha
 Maharastra,2013-14,468,5864.04,12.53
 Maharastra,2011-12,382,5638,14.76
 Maharastra,2014-15,427.93,5361.96,12.53
@@ -718,4 +718,3 @@ Puducherry,2012-13,0.01,0.09,9
 Puducherry,2011-12,0.01,0.05,5
 Himachal Pradesh,1984-85,0.6,0,0
 Kerala,2014-15,0.1,0,0
- ,Total,19391.27,248218.4,12.8

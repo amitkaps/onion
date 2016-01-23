@@ -76,6 +76,34 @@ file <- paste("data/dailyprice", as.character(month), as.character(year), ".csv"
 write.csv(pg.table, file = file, quote = FALSE, row.names = FALSE)
 ```
 
+
+Ready to go forward. Lets write similiar stuff to get the [Monthly Price Data](http://nhrdf.org/en-us/MonthWiseMarketArrivals) data
+
+```{r}
+url4 <- "http://nhrdf.org/en-us/MonthWiseMarketArrivals"
+pg4.session <- html_session(url4)
+pg4.form <- html_form(pg4.session)[[1]]
+pg4.form.filled <- set_values(pg4.form, 
+                      "dnn$dnnLANG$selectCulture" = "en-US",
+                      "dnn$ctr974$MonthWiseMarketArrivals$Market" = "",
+                      "dnn$ctr974$MonthWiseMarketArrivals$MonthName" = "",
+                      "dnn$ctr974$MonthWiseMarketArrivals$Year" = "All",
+                      "dnn$ctr974$MonthWiseMarketArrivals$Crop" = 1)
+
+pg4.submit <- submit_form(pg4.session, pg4.form.filled,
+                submit ='dnn$ctr974$MonthWiseMarketArrivals$btnSearch')
+pg4.out <- html(pg4.submit)
+pg4.table <-  pg4.out %>% 
+            html_node("#dnn_ctr974_MonthWiseMarketArrivals_GridView1")  %>%
+            html_table()
+
+str(pg4.table)
+write.csv(pg4.table, file = "data/monthlyprice.csv", quote = FALSE, row.names = FALSE)
+```
+
+
+
+
 Ready to go forward. Lets write similiar stuff to get the [Area and Production](http://nhrdf.org/en-us/AreaAndProductiionReport) data
 
 ```{r}
